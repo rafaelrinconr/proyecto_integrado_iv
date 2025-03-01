@@ -20,16 +20,57 @@ def get_public_holidays(public_holidays_url: str, year: str) -> DataFrame:
     Returns:
         DataFrame: A dataframe with the public holidays.
     """
-    # TODO: Implementa esta función.
-    # Debes usar la biblioteca requests para obtener los días festivos públicos del año dado.
-    # La URL es public_holidays_url/{year}/BR.
-    # Debes eliminar las columnas "types" y "counties" del DataFrame.
-    # Debes convertir la columna "date" a datetime.
-    # Debes lanzar SystemExit si la solicitud falla. Investiga el método raise_for_status
-    # de la biblioteca requests.
+    
 
-    raise NotImplementedError
+    #************************************
+    url = f"{public_holidays_url}/{year}/BR"
+    # Construye la URL para la API de días festivos.
+    # public_holidays_url: URL base de la API.
+    # year: Año para el cual se obtienen los días festivos.
+    # /BR: Especifica que se obtienen los días festivos de Brasil.
+    # Resultado: Una URL completa para la solicitud a la API.
+    
+    # Bloque de excepción
+    try:
+        response = requests.get(url)
+        # Realiza una solicitud GET a la URL usando la biblioteca requests.
+        # Almacena la respuesta de la API en la variable response.
+        response.raise_for_status()
+        # Verifica si la solicitud fue exitosa.
+        # Lanza una excepción si la solicitud falla.
+        data = response.json()
+        # Convierte la respuesta JSON a un diccionario de Python.
+    except requests.exceptions.RequestException as e:
+        # Captura excepciones si ocurre un error durante la solicitud.
+        print(f"Error al obtener datos de la API: {e}")
+        # Imprime un mensaje de error con la excepción capturada.
+        raise SystemExit(f"Error al obtener datos de la API: {e}")
+        # Termina la ejecución del programa debido a un error en la solicitud.
 
+    holidays_df = DataFrame(data)
+    # Crea un DataFrame de pandas a partir del diccionario de Python (datos JSON).
+
+    if "types" in holidays_df.columns:
+        # Verifica si la columna "types" existe en el DataFrame.
+        holidays_df = holidays_df.drop(columns=["types"])
+        # Elimina la columna "types" del DataFrame si existe.
+    if "counties" in holidays_df.columns:
+        # Verifica si la columna "counties" existe en el DataFrame.
+        holidays_df = holidays_df.drop(columns=["counties"])
+        # Elimina la columna "counties" del DataFrame si existe.
+
+
+    holidays_df["date"] = to_datetime(holidays_df["date"])
+    # Convierte la columna "date" a tipo datetime usando la función to_datetime de pandas.
+
+    print(url)
+    # Imprime la URL utilizada para obtener los datos de la API.
+    return holidays_df
+    # Retorna el DataFrame con los datos de los días festivos.
+    
+    #**************************************
+
+    
 
 def extract(
     csv_folder: str, csv_table_mapping: Dict[str, str], public_holidays_url: str
@@ -52,5 +93,5 @@ def extract(
     holidays = get_public_holidays(public_holidays_url, "2017")
 
     dataframes["public_holidays"] = holidays
-
+    
     return dataframes
