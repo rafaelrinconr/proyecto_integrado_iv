@@ -7,7 +7,7 @@
 -- como la fecha real de entrega no deben ser nulas.
 
 WITH OrderCategoryRevenue AS (
-    -- Define una Common Table Expression (CTE) llamada OrderCategoryRevenue
+    -- Define una Common Table Expression llamada OrderCategoryRevenue
     SELECT
         pcnt.product_category_name_english AS Category, -- Selecciona el nombre de la categoría del producto en inglés y lo renombra como Category
         ooi.order_id, -- Selecciona el ID del pedido
@@ -28,7 +28,7 @@ SELECT
     COUNT(DISTINCT order_id) AS Num_order, -- Cuenta el número de pedidos únicos por categoría y lo renombra como Num_order
     SUM(payment_value) AS Revenue -- Suma los valores de pago por categoría y lo renombra como Revenue
 FROM
-    OrderCategoryRevenue -- Desde la CTE OrderCategoryRevenue
+    OrderCategoryRevenue -- Desde la OrderCategoryRevenue
 GROUP BY
     Category -- Agrupa los resultados por categoría
 ORDER BY

@@ -15,7 +15,7 @@
 -- 2. order_status == 'delivered' AND order_delivered_customer_date IS NOT NULL
 -- 3. Considera tomar order_id distintos.
 
--- Define una expresión de tabla común (CTE) llamada delivery_times
+-- Define una expresión de tabla común llamada delivery_times
 WITH delivery_times AS (
   -- Selecciona el número de mes de la fecha de compra del pedido
   SELECT
@@ -50,7 +50,7 @@ WITH delivery_times AS (
   GROUP BY
     o.order_id
 )
--- Consulta principal que utiliza la CTE 'delivery_times'
+-- Consulta principal que utiliza la 'delivery_times'
 SELECT
   -- Selecciona el número de mes
   dt.month_no,
