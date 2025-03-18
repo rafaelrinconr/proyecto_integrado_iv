@@ -172,7 +172,10 @@ def query_freight_value_weight_relationship(database: Engine) -> QueryResult:
     # TODO: Fusionar las tablas items, orders y products usando 'order_id'/'product_id'.
     # Sugerimos usar la función pandas.merge().
     # Asigna el resultado a la variable `data`.
+
+    # Combina los DataFrames 'items' y 'orders' usando la columna 'order_id'
     data = pd.merge(items, orders, on='order_id')
+    # Combina el DataFrame resultante con 'products' usando la columna 'product_id'
     data = pd.merge(data, products, on='product_id')
 
 
@@ -180,6 +183,8 @@ def query_freight_value_weight_relationship(database: Engine) -> QueryResult:
     # Usando los resultados anteriores de la fusión (almacenados en la variable `data`),
     # aplica una máscara booleana para conservar solo los pedidos con estado 'delivered'.
     # Asigna el resultado a la variable `delivered`.
+    
+    # Filtra el DataFrame 'data' para incluir solo los pedidos con estado 'delivered'
     delivered = data[data['order_status'] == 'delivered']
 
     # TODO: Obtener la suma de freight_value y product_weight_g por cada order_id.
@@ -190,9 +195,11 @@ def query_freight_value_weight_relationship(database: Engine) -> QueryResult:
     # que consultes pandas.DataFrame.groupby() y pandas.DataFrame.agg() para la
     # transformación de los datos.
     # Guarda el resultado en la variable `aggregations`.
+    
+    # Agrupa el DataFrame 'delivered' por 'order_id' y calcula la suma de 'freight_value' y 'product_weight_g', luego reinicia el índice.
     aggregations = delivered.groupby('order_id').agg({
-    'freight_value': 'sum',
-    'product_weight_g': 'sum'
+     'freight_value': 'sum',
+     'product_weight_g': 'sum'
     }).reset_index()
 
     # Mantén el código a continuación tal como está, esto devolverá el resultado de
@@ -228,6 +235,8 @@ def query_orders_per_day_and_holidays_2017(database: Engine) -> QueryResult:
     # Reemplaza el contenido de la columna `order_purchase_timestamp` en el DataFrame `orders`
     # con los mismos datos pero convertidos a tipo datetime.
     # Te sugerimos leer sobre cómo usar pd.to_datetime() para esto.
+
+    # Convierte la columna 'order_purchase_timestamp' al tipo datetime.
     orders["order_purchase_timestamp"] = pd.to_datetime(orders["order_purchase_timestamp"])
 
 
@@ -235,12 +244,16 @@ def query_orders_per_day_and_holidays_2017(database: Engine) -> QueryResult:
     # Usando el DataFrame `orders`, aplica una máscara booleana para obtener todas las
     # columnas, pero solo las filas correspondientes al año 2017.
     # Asigna el resultado a una nueva variable llamada `filtered_dates`.
+    
+    # Filtra el DataFrame 'orders' para incluir solo las compras realizadas en el año 2017.
     filtered_dates = orders[orders["order_purchase_timestamp"].dt.year == 2017]
 
     # TODO: Contar la cantidad de pedidos por día.
     # Usando el DataFrame `filtered_dates`, cuenta cuántos pedidos se hicieron
     # cada día.
     # Asigna el resultado a la variable `order_purchase_ammount_per_date`.
+    
+    # Agrupa el DataFrame filtrado por fecha de compra y cuenta el número de pedidos por fecha.
     order_purchase_ammount_per_date = filtered_dates.groupby(filtered_dates["order_purchase_timestamp"].dt.date).size()
 
     # TODO: Crear un DataFrame con el resultado. Asígnalo a la variable `result_df`.
@@ -251,10 +264,12 @@ def query_orders_per_day_and_holidays_2017(database: Engine) -> QueryResult:
     #   - 'date': la fecha correspondiente a cada cantidad de pedidos.
     #   - 'holiday': columna booleana con True si esa fecha es festivo,
     #                y False en caso contrario. Usa el DataFrame `holidays` para esto.
+
+    # Crea un DataFrame con la cantidad de pedidos por día, la fecha y una columna booleana indicando si la fecha fue festivo.
     result_df = pd.DataFrame({
-    'order_count': order_purchase_ammount_per_date.values,
-    'date': order_purchase_ammount_per_date.index,
-    'holiday': order_purchase_ammount_per_date.index.isin(holidays['date'])
+     'order_count': order_purchase_ammount_per_date.values,
+     'date': order_purchase_ammount_per_date.index,
+     'holiday': order_purchase_ammount_per_date.index.isin(holidays['date'])
     })
 
     # Mantén el código a continuación tal como está, esto devolverá el resultado de
